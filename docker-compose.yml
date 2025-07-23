@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+    # Server Service
+    server:
+        container_name: pickone-server
+        build:
+            context: ./pickone-server
+            dockerfile: Dockerfile
+        ports:
+            - '5000:5000'
+        volumes:
+            - ./pickone-server/src:/app/src
+            - /app/node_modules
+        networks:
+            - app-network
+        depends_on:
+            - mongodb
+        env_file:
+            - ./pickone-server/.env
+        restart: unless-stopped
+
+    # Client Service
+    client:
+        container_name: pickone-client
+        build:
+            context: ./pickone-client
+            dockerfile: Dockerfile
+        ports:
+            - '3000:3000'
+        networks:
+            - app-network
+        environment:
+            - NODE_ENV=production
+            - NEXT_PUBLIC_API_URL=http://103.213.38.213:5000
+        restart: unless-stopped
+
+    # Admin Service
+    admin:
+        container_name: pickone-admin
+        build:
+            context: ./pickone-admin
+            dockerfile: Dockerfile
+        ports:
+            - '3001:3001'
+        networks:
+            - app-network
+        environment:
+            - NODE_ENV=production
+            - NEXT_PUBLIC_API_URL=http://103.213.38.213:5000
+        restart: unless-stopped
+
+    # MongoDB Service
+    mongodb:
+        container_name: pickone-mongodb
+        image: mongo:latest
+        ports:
+            - '27017:27017'
+        networks:
+            - app-network
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+            - MONGO_INITDB_DATABASE=${MONGO_INITDB_DATABASE}
+        volumes:
+            - ./pickone-server/mongodb:/data/db
+        restart: unless-stopped
+
+networks:
+    app-network:
+        driver: bridge
+
+volumes:
+    mongodb_data:

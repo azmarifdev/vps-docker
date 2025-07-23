@@ -1,0 +1,40 @@
+import { Metadata } from 'next';
+import { Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+// Import StaticPageClient dynamically to avoid SSR issues with useSearchParams
+const StaticPageClient = dynamic(
+    () => import('@/components/client/StaticPageClient'),
+    { ssr: false }
+);
+
+export const metadata: Metadata = {
+    title: 'Warranty Information - PickOne',
+    description:
+        'Learn about our product warranties, coverage policies, and how to make warranty claims for your PickOne solar lighting products.',
+};
+
+export default function WarrantyPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <StaticPageClient>
+                <div className="max-w-5xl mx-auto px-4 py-12">
+                    {/* Hero Section */}
+                    <div className="mb-16 text-center">
+                        <h1 className="text-3xl md:text-4xl font-bold mb-4">Warranty Information</h1>
+                        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                            We stand behind the quality of our products with comprehensive warranty coverage. Learn about our
+                            warranty terms, what is covered, and how to submit a claim.
+                        </p>
+                    </div>
+
+                    {/* Content Sections */}
+                    <div className="space-y-16">
+                        {/* Content here */}
+                        <p>Please refer to our warranty documentation for full details.</p>
+                    </div>
+                </div>
+            </StaticPageClient>
+        </Suspense>
+    );
+}
